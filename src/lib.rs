@@ -4,7 +4,8 @@
 //! sensing-server and runs each semantic primitive's finite-state machine,
 //! emitting a `SemanticEvent` whenever a primitive's active state changes.
 //!
-//! This is the reference (oracle) implementation.
+//! The `SemanticEngine::push` state machines are not implemented yet — see the
+//! task instructions.
 
 use std::collections::VecDeque;
 
@@ -95,9 +96,6 @@ impl Sustained {
         }
     }
 }
-
-/// Warmup suppression window: no primitive fires in the first 60 s (ADR §3.12.4).
-const WARMUP_S: u64 = 60;
 
 /// The semantic-inference engine. Feed it readings in time order.
 #[allow(dead_code)]

@@ -1,11 +1,15 @@
-//! RuView HA-MIND semantic-inference layer (ADR-115 §3.12).
+//! RuView HA-MIND semantic-inference layer (ADR-115 §3.12–§3.13).
 //!
 //! Consumes a stream of fused sensor `Reading`s (one per second) from the
 //! sensing-server and runs each semantic primitive's finite-state machine,
 //! emitting a `SemanticEvent` whenever a primitive's active state changes.
 //!
-//! The `SemanticEngine::push` state machines are not implemented yet — see the
-//! task instructions.
+//! On top of the per-tick primitives, the engine also learns the resident's
+//! normal daily routine and raises `CheckInAdvisory`s when a day departs from
+//! that learned baseline (ADR-115 §3.13, "Routine Watch").
+//!
+//! The `SemanticEngine::push` state machines and the Routine Watch are not
+//! implemented yet — see the task instructions.
 
 use std::collections::VecDeque;
 
@@ -78,6 +82,25 @@ pub struct SemanticEvent {
     pub t_s: u64,
 }
 
+/// How far a completed day's routine departs from the learned baseline.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Severity {
+    Low,
+    Medium,
+    High,
+}
+
+/// A check-in advisory raised when a completed day's routine deviates from the
+/// resident's learned baseline. `pattern` names which routine primitive is off;
+/// `severity` grades the departure; `t_s` is the tick at which the advisory was
+/// raised (the day-close tick).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CheckInAdvisory {
+    pub pattern: Primitive,
+    pub severity: Severity,
+    pub t_s: u64,
+}
+
 /// Tracks how long a boolean condition has held continuously (seconds).
 #[derive(Default, Clone, Copy)]
 struct Sustained {
@@ -138,8 +161,16 @@ impl SemanticEngine {
 
     /// Push one reading; returns the state-change events emitted at this tick.
     pub fn push(&mut self, r: Reading) -> Vec<SemanticEvent> {
-        // TODO: implement the ADR-115 semantic-inference FSMs.
+        // TODO: implement the ADR-115 §3.12 semantic-inference FSMs and feed
+        // the §3.13 Routine Watch.
         let _ = r;
+        Vec::new()
+    }
+
+    /// All check-in advisories raised so far, in the order they were raised
+    /// (ADR-115 §3.13 Routine Watch).
+    pub fn advisories(&self) -> Vec<CheckInAdvisory> {
+        // TODO: implement the Routine Watch.
         Vec::new()
     }
 }
